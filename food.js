@@ -1,32 +1,32 @@
 
-// Call Ids
+// Load data
+const searchFood = () => {
+    const foodNameInput = document.getElementById('foodName').value;
+    const url = `https://www.themealdb.com/api/json/v1/1/search.php?s=${foodNameInput}`
+    fetch(url)
+        .then(res => res.json())
+        .then(data => displayFoods(data.meals))
+        .catch(error => errorMessage('No Food Found'))
 
-const dataContent = document.getElementById('foodsItem');
-const searchBtn = document.getElementById('searchBtn');
-const errorMessage = document.getElementById('errorMessage');
+}
 
-searchBtn.addEventListener('click', function () {
-    errorMessageFunc();
-});
-
-
-//  Error Message
-
-function errorMessageFunc(){
-    const foodName = document.getElementById('foodName').value;
-    dataContent.innerHTML = '';
-    if (foodName === '') {
-        errorMessage.style.display = 'block';
-    } else {
-        getFood(foodName);
-        errorMessage.style.display = 'none';
-    }
+// Display data
+const displayFoods = foods => {
+    const foodsDiv = document.getElementById('foodsItem');
+    foodsDiv.innerText = '';
+    foods.forEach(foodElement => {
+        const foodDiv = document.createElement('div');
+        foodDiv.className = 'col-md-3';
+        foodDiv.innerHTML = `<div onclick="displayDetails('${foodElement.idMeal}')" class="border rounded text-center h-100" data-bs-toggle="modal" data-bs-target="#exampleModal">
+        <img class="img-fluid rounded-top" src="${foodElement.strMealThumb}" alt="">
+        <h4 class="h5 py-4 px-2 mb-0">${foodElement.strMeal}</h4>
+        </div>`
+        foodsDiv.appendChild(foodDiv);
+    });
 }
 
 
-//  Fetch function
-
-
+// Load details
 const displayDetails = foodName => {
     const apiUrl = `https://www.themealdb.com/api/json/v1/1/lookup.php?i=${foodName}`;
     fetch(apiUrl)
@@ -34,12 +34,11 @@ const displayDetails = foodName => {
         .then(data => {
             renderFoodInfo(data.meals[0]);
         })
-        .catch((error) => {
-            errorMessage.style.display = 'none';
-            console.error(errorMessage, error);
-          });
+
 };
 
+
+// Pop Up
 const renderFoodInfo = food => {
     const foodDetailsDiv = document.getElementById('foodsDetails');
 
@@ -59,33 +58,9 @@ const renderFoodInfo = food => {
 `;
 };
 
-function getFood(foodId) {
-    
-    const mainApi = `https://www.themealdb.com/api/json/v1/1/search.php?s=${foodId}`;
 
-    fetch(mainApi)
-        .then(res => res.json())
-        .then(data => {
-            displayFoods(data.meals);
-        });
-
-    const displayFoods = foods => {
-        const foodsDiv = document.getElementById('foodsItem');
-        if (foods != null) {
-            foods.map(food => {
-                const foodDiv = document.createElement('div');
-                foodDiv.className = 'col-md-3';
-                const foodInfo = `
-                        <div onclick="displayDetails('${food.idMeal}')" class="border rounded text-center h-100" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                        <img class="img-fluid rounded-top" src="${food.strMealThumb}" alt="">
-                        <h4 class="h5 py-4 px-2 mb-0">${food.strMeal}</h4>
-                        </div>
-                    `;
-                foodDiv.innerHTML = foodInfo;
-                foodsDiv.appendChild(foodDiv);
-            });
-        } else {
-            errorMessage.style.display = 'block'; 
-        }
-    };
+// Error message
+const errorMessage = error => {
+    const errorTag = document.getElementById('errorMes');
+    errorTag.innerText = error;
 }

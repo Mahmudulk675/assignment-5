@@ -129,10 +129,6 @@ ul li {
     padding: 5px 0;
 }
 
-.icon-check {
-    color: #e74c3c;
-    margin-right: 5px;
-}
 
 #errorMessage {
     display: none;
